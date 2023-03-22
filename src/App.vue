@@ -105,6 +105,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <router-view></router-view>
   <section>
     <div class="content-container">
       <div class="tab-container">
