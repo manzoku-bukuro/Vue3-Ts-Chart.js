@@ -2,25 +2,14 @@
   <section>
     <div class="content-container">
       <div class="tab-container">
-        <button id="defaultOpen" class="tab-links" @click="changeTab('steps')">
-          歩数
-        </button>
-        <button class="tab-links" @click="changeTab('hours-of-sleep')">
-          睡眠時間
-        </button>
-        <button class="tab-links" @click="changeTab('heartbeats')">
-          心拍数
+        <button class="tab-links" v-for="(tab, tabIndex) in tabs" :key="`tab-${tabIndex}`" @click="changeTab(tab.chart)">
+          {{ tab.label }}
         </button>
       </div>
       <div class="category-container">
-        <div id="steps" class="tab-content">
-          <canvas id="stepsChart"></canvas>
-        </div>
-        <div id="hours-of-sleep" class="tab-content">
-          <canvas id="sleepTimeChart"></canvas>
-        </div>
-        <div id="heartbeats" class="tab-content">
-          <canvas id="heartRateChart"></canvas>
+        <div class="tab-content" v-show="activeTab === chartKey" v-for="(chart, chartKey) in chartData"
+          :key="`chart-${chartKey}`">
+          <canvas :ref="`canvas-${chartKey}`"></canvas>
         </div>
       </div>
     </div>
@@ -32,74 +21,80 @@ import Chart from 'chart.js/auto';
 export default {
   data() {
     return {
-      stepsData: {
-        type: 'bar',
-        data: {
-          labels: ['1', '2', '3', '4', '5', '6'],
-          datasets: [
-            {
-              data: [10, 20, 5, 20, 40, 5],
-              backgroundColor: '#17A220',
+      chartData: {
+        steps: {
+          type: 'bar',
+          data: {
+            labels: ['1', '2', '3', '4', '5', '6'],
+            datasets: [
+              {
+                data: [10, 20, 5, 20, 40, 5],
+                backgroundColor: '#17A220',
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
             },
-          ],
+          },
         },
-        options: {
-          plugins: {
-            legend: {
-              display: false,
+        sleep: {
+          type: 'bar',
+          data: {
+            labels: ['1', '2', '3', '4', '5', '6'],
+            datasets: [
+              {
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: '#17A220',
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          },
+        },
+        heart: {
+          type: 'line',
+          data: {
+            labels: ['1', '2', '3', '4', '5', '6'],
+            datasets: [
+              {
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: '#17A220',
+                borderColor: 'green'
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                display: false,
+              },
             },
           },
         },
       },
-      sleepTimeData: {
-        type: 'bar',
-        data: {
-          labels: ['1', '2', '3', '4', '5', '6'],
-          datasets: [
-            {
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: '#17A220',
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      },
-      heartRateData: {
-        type: 'line',
-        data: {
-          labels: ['1', '2', '3', '4', '5', '6'],
-          datasets: [
-            {
-              data: [12, 19, 3, 5, 2, 3],
-              backgroundColor: '#17A220',
-              borderColor: 'green'
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              display: false,
-            },
-          },
-        },
-      },
-    }
-  },
-  methods: {
-    changeTab(tab) {
-      this.activeTab = tab
+      tabs: [{ label: '歩数', chart: 'steps' }, { label: '睡眠', chart: 'sleep' }, { label: '心拍数', chart: 'heart' }],
+      activeTab: 'steps',
     }
   },
   mounted() {
-    new Chart(document.getElementById('stepsChart'), this.stepsData);
-  }
+    this.tabs.forEach((tab) => {
+      new Chart(this.$refs[`canvas-${tab.chart}`], this.chartData[tab.chart]);
+    })
+  },
+  methods: {
+    changeTab(tab) {
+      this.activeTab = tab;
+    }
+  },
 }
 </script>
 
