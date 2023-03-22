@@ -1,32 +1,95 @@
 <template>
-  <div class="content-container">
-    <div class="tab-container">
-      <button id="defaultOpen" class="tab-links" onclick="changeTab(event, 'steps')">歩数</button>
-      <button class="tab-links" onclick="changeTab(event, 'hours-of-sleep')">睡眠時間</button>
-      <button class="tab-links" onclick="changeTab(event, 'heartbeats')">心拍数</button>
+  <section>
+    <div class="content-container">
+      <div class="tab-container">
+        <button id="defaultOpen" class="tab-links" @click="changeTab('steps')">
+          歩数
+        </button>
+        <button class="tab-links" @click="changeTab('hours-of-sleep')">
+          睡眠時間
+        </button>
+        <button class="tab-links" @click="changeTab('heartbeats')">
+          心拍数
+        </button>
+      </div>
+      <div class="category-container">
+        <div id="steps" class="tab-content">
+          <canvas id="stepsChart"></canvas>
+        </div>
+        <div id="hours-of-sleep" class="tab-content">
+          <canvas id="sleepTimeChart"></canvas>
+        </div>
+        <div id="heartbeats" class="tab-content">
+          <canvas id="heartRateChart"></canvas>
+        </div>
+      </div>
     </div>
-    <div class="category-container">
-      <div id="steps" class="tab-content">
-        <canvas id="stepsChart"></canvas>
-      </div>
-      <div id="hours-of-sleep" class="tab-content">
-        <canvas id="sleepTimeChart"></canvas>
-      </div>
-      <div id="heartbeats" class="tab-content">
-        <canvas id="heartRateChart"></canvas>
-      </div>
-    </div>
-  </div>
+  </section>
 </template>
 
 <script>
-import jsonData from '../data/user.json';
-import { base64 } from 'base64-js';
+import Chart from 'chart.js/auto';
 export default {
   data() {
     return {
-      activeTab: 'steps',
-      json: jsonData,
+      stepsData: {
+        type: 'bar',
+        data: {
+          labels: ['1', '2', '3', '4', '5', '6'],
+          datasets: [
+            {
+              data: [10, 20, 5, 20, 40, 5],
+              backgroundColor: '#17A220',
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      },
+      sleepTimeData: {
+        type: 'bar',
+        data: {
+          labels: ['1', '2', '3', '4', '5', '6'],
+          datasets: [
+            {
+              data: [12, 19, 3, 5, 2, 3],
+              backgroundColor: '#17A220',
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      },
+      heartRateData: {
+        type: 'line',
+        data: {
+          labels: ['1', '2', '3', '4', '5', '6'],
+          datasets: [
+            {
+              data: [12, 19, 3, 5, 2, 3],
+              backgroundColor: '#17A220',
+              borderColor: 'green'
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            legend: {
+              display: false,
+            },
+          },
+        },
+      },
     }
   },
   methods: {
@@ -34,10 +97,8 @@ export default {
       this.activeTab = tab
     }
   },
-  async mounted() {
-    const response = await fetch('http://localhost:5222/user');
-    const binaryData = await response.arrayBuffer();
-    const base64Data = base64.fromByteArray(new Uint8Array(binaryData));
+  mounted() {
+    new Chart(document.getElementById('stepsChart'), this.stepsData);
   }
 }
 </script>
