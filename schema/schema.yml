@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: API Response Schema
+  version: 1.0.0
+  description: schema for API response
+servers:
+  - url: 'http://localhost:5222/user'
+paths:
+  /user:
+    get:
+      summary: get user vital
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                          format: date
+                          description: Date of data
+                        time:
+                          type: string
+                          format: time
+                          description: Time of data
+                        heartRate:
+                          type: integer
+                          description: Heart rate (beats per minute)
+                        heartRateVariability:
+                          type: integer
+                          description: Heart rate variability (milliseconds)
+                        sbp:
+                          type: integer
+                          description: Systolic blood pressure (mmHg)
+                        dbp:
+                          type: integer
+                          description: Diastolic blood pressure (mmHg)
+                        steps:
+                          type: integer
+                          description: Number of steps taken
+                        sleep:
+                          type: integer
+                          description: Duration of sleep (minutes)
+                        temperature:
+                          type: number
+                          description: Body temperature (degrees Celsius)
+                        spo2:
+                          type: integer
+                          description: Blood oxygen saturation (%)
+                        bloodGlucose:
+                          type: integer
+                          description: Blood glucose level (mg/dL)
+                        bodyFatPercentage:
+                          type: integer
+                          description: Body fat percentage (%)
+                        latitude:
+                          type: number
+                          description: Latitude of data (degrees)
+                        longitude:
+                          type: number
+                          description: Longitude of data (degrees)
+                        altitude:
+                          type: number
+                          description: Altitude of data (meters)
+                        batteryLevel:
+                          type: integer
+                          description: Battery level (%)
+                        sos:
+                          type: integer
+                          description: SOS status (0 or 1)
+                        highLowHeartRate:
+                          type: integer
+                          description: High or low heart rate status (0 or 1)
+                required:
+                  - date
+                  - time
+                  - heartRate
+                  - heartRateVariability
+                  - sbp
+                  - dbp
+                  - steps
+                  - sleep
+                  - temperature
+                  - spo2
+                  - bloodGlucose
+                  - bodyFatPercentage
+                  - latitude
+                  - longitude
+                  - altitude
+                  - batteryLevel
+                  - sos
+                  - highLowHeartRate
