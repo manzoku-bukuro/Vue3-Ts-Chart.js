@@ -1,0 +1,1 @@
+json-server -w ./data/vital.json --port 5222
