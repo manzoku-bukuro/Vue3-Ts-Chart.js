@@ -1,67 +1,90 @@
 <script setup lang="ts">
-import { useUserStore } from './store/user';
+import { ref, onMounted } from 'vue';
+import { useUserStore, type UserVitalData, type DayGroupList, type MonthGroupList, type ChartData } from './store/user';
 const userStore = useUserStore();
-interface UserVitalData {
-  date: string;
-  time: string;
-  heartRate: number;
-  heartRateVariability: number;
-  sbp: number;
-  dbp: number;
-  steps: number;
-  sleep: number;
-  temperature: number;
-  spo2: number;
-  bloodGlucose: number;
-  bodyFatPercentage: number;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  batteryLevel: number;
-  sos: number;
-  highLowHeartRate: number;
-}
-const response = await fetch('http://localhost:5222/user');
-const data: UserVitalData[] = await response.json();
 
-const sortData = data.sort((before, after) => {
-  const dateBefore = new Date(before.date);
-  const dateAfter = new Date(after.date);
-  return dateBefore.getTime() - dateAfter.getTime();
-})
+const getUserData = async () => {
+  const response = await fetch('http://localhost:5222/user');
+  const data: UserVitalData[] = await response.json();
 
-interface DateGroup {
-  [key: string]: UserVitalData[]
+  const dayGroupList = convertToDayGroupList(data);
+
+  calculateAverageData(dayGroupList);
+
+  const monthGroupList = convertToMonthGroupList(userStore.dayAverageList);
+
+  userStore.userData = data;
+  userStore.dayGroupList = dayGroupList;
+  userStore.monthGroupList = monthGroupList;
 }
-const dateGroupList = sortData.reduce((group: DateGroup, dayData: UserVitalData) => {
+
+const convertToDayGroupList = (data: UserVitalData[]): DayGroupList => {
+  return data.reduce((group: DayGroupList, dayData: UserVitalData) => {
     const key = dayData.date;
     if (!group[key]) {
       group[key] = [];
     }
     group[key].push(dayData);
-  return group;
-}, {});
-
-interface MonthGroup {
-  [key: string]: {
-    [key: string]: UserVitalData[];
-  };
+    return group;
+  }, {});
 }
 
-const monthGroupList: MonthGroup = {};
+const convertToMonthGroupList = (dayGroupList: { [key: string]: ChartData }): MonthGroupList => {
+  const monthGroupList: MonthGroupList = {};
 
-Object.keys(dateGroupList).forEach((date) => {
-  const month = date.slice(0, 7); // ex. 2022-07
-  const day = date.slice(-2); // ex. 08
+  for (const date of Object.keys(dayGroupList)) {
+    const dayData = dayGroupList[date];
+    const month = date.slice(0, 7);
+    const day = date.slice(-2);
 
-  if (!monthGroupList[month]) {
-    monthGroupList[month] = {};
+    if (!monthGroupList[month]) {
+      monthGroupList[month] = {};
+    }
+
+    monthGroupList[month][day] = userStore.dayAverageList[date];
   }
-  monthGroupList[month][day] = dateGroupList[date];
-});
 
-userStore.dateGroupList = dateGroupList;
-userStore.monthGroupList = monthGroupList;
+  return monthGroupList;
+}
+
+// 歩数, 睡眠時間, 心拍数(平均, 最大値, 最小値)を取得
+// 数値が0の場合バイタルデータを使用していないとみなし除外する
+const calculateAverageData = (dayGroupList: DayGroupList) => {
+  for (const date of Object.keys(dayGroupList)) {
+    const dayData = dayGroupList[date];
+
+    // 歩数を取得
+    const stepsArray = dayData.filter(data => data.steps > 0).map(data => data.steps);
+    const stepsSum = stepsArray.reduce((sum: number, steps: number) => sum + steps, 0);
+    const averageSteps = stepsSum / dayData.length;
+
+    // 睡眠時間を取得
+    const sleepArray = dayData.filter(data => data.sleep > 0).map(data => data.sleep);
+    const sleepSum = sleepArray.reduce((sum: number, sleep: number) => sum + sleep, 0);
+    const averageSleep = sleepSum / dayData.length;
+
+    // 心拍数平均、最大値、最小値を取得
+    const heartRateArray = dayData.map(data => data.heartRate).filter(hr => hr > 0);
+    const averageHeartRate = heartRateArray.reduce((sum: number, hr: number) => sum + hr, 0) / heartRateArray.length;
+    const maxHeartRate = Math.max(...heartRateArray);
+    const minHeartRate = Math.min(...heartRateArray);
+
+
+    userStore.dayAverageList[date] = {
+      heartRate: {
+        average: averageHeartRate,
+        max: maxHeartRate,
+        min: minHeartRate,
+      },
+      steps: averageSteps,
+      sleep: averageSleep
+    };
+  }
+}
+
+onMounted(async () => {
+  await getUserData();
+})
 </script>
 
 <template>
