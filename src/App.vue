@@ -81,14 +81,15 @@ const calculateAverageData = (dayGroupList: DayGroupList) => {
     };
   }
 }
-
+const isLoading = ref(true);
 onMounted(async () => {
   await getUserData();
+  isLoading.value = false;
 })
 </script>
 
 <template>
-  <router-view></router-view>
+  <router-view v-if="!isLoading"></router-view>
 </template>
 
 
