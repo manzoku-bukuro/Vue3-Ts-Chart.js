@@ -1,7 +1,8 @@
 import { defineStore, type _GettersTree } from "pinia";
 export interface UserState {
     userData: any[];
-    augustDateGroupList: any;
+    dateGroupList: any;
+    monthGroupList: any;
 }
 
 export interface UserGetters extends _GettersTree<UserState> {}
@@ -10,7 +11,8 @@ export const useUserStore = defineStore<string, UserState, UserGetters, UserActi
     id: 'user',
     state: () => ({
         userData: [],
-        augustDateGroupList: {},
+        dateGroupList: {},
+        monthGroupList: {},
     }),
     getters: {},
     actions: {},

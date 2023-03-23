@@ -24,28 +24,44 @@ interface UserVitalData {
 const response = await fetch('http://localhost:5222/user');
 const data: UserVitalData[] = await response.json();
 
-const startDate = new Date("2022-08-01");
-const endDate = new Date("2022-08-31");
+const sortData = data.sort((before, after) => {
+  const dateBefore = new Date(before.date);
+  const dateAfter = new Date(after.date);
+  return dateBefore.getTime() - dateAfter.getTime();
+})
 
-const filterTermData = data.filter((d) => {
-  const date = new Date(d.date);
-  return date >= startDate && date <= endDate;
-});
-
-interface DataGroup {
+interface DateGroup {
   [key: string]: UserVitalData[]
 }
-userStore.augustDateGroupList = filterTermData.reduce((group: DataGroup, dayData: UserVitalData) => {
-  const currentDate = new Date(dayData.date);
-  if (currentDate >= startDate && currentDate <= endDate) {
+const dateGroupList = sortData.reduce((group: DateGroup, dayData: UserVitalData) => {
     const key = dayData.date;
     if (!group[key]) {
       group[key] = [];
     }
     group[key].push(dayData);
-  }
   return group;
 }, {});
+
+interface MonthGroup {
+  [key: string]: {
+    [key: string]: UserVitalData[];
+  };
+}
+
+const monthGroupList: MonthGroup = {};
+
+Object.keys(dateGroupList).forEach((date) => {
+  const month = date.slice(0, 7); // ex. 2022-07
+  const day = date.slice(-2); // ex. 08
+
+  if (!monthGroupList[month]) {
+    monthGroupList[month] = {};
+  }
+  monthGroupList[month][day] = dateGroupList[date];
+});
+
+userStore.dateGroupList = dateGroupList;
+userStore.monthGroupList = monthGroupList;
 </script>
 
 <template>
