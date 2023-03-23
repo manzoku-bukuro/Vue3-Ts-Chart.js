@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useUserStore, type UserVitalData, type DayGroupList, type MonthGroupList, type ChartData } from './store/user';
+import SideMenu from './components/uiParts/SideMenu.vue';
+
 const userStore = useUserStore();
 
 const getUserData = async () => {
@@ -89,11 +91,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <router-view v-if="!isLoading"></router-view>
+  <div class="chart-container">
+    <SideMenu />
+    <router-view v-if="!isLoading"></router-view>
+  </div>
 </template>
 
 
 <style>
 @import "./assets/chart.css";
+@import "./assets/reset.css";
+.chart-container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 1fr;
+  height: 100%;
+}
 </style>
 
