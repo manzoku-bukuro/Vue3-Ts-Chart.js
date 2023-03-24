@@ -7,9 +7,9 @@ const props = defineProps({
     barKey: String,
     type: String,
 });
-const chart = ref(null);
-const drawChart = (labels, data) => {
-    chart.value = new Chart(document.getElementById(`bar-chart-${props.barKey}`), {
+const chart = ref<any>(null);
+const drawChart = (labels: string, data: number[]) => {
+    chart.value = new Chart((document as any).getElementById(`bar-chart-${props.barKey}`), {
         type: props.type,
         data: {
             labels: labels,
@@ -29,7 +29,7 @@ const drawChart = (labels, data) => {
                 },
             },
         },
-    });
+    } as any);
 }
 const destroyChart = () => {
     chart.value.destroy();
