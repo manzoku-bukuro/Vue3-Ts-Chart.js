@@ -1,12 +1,12 @@
-<script setup>
+<script lang="ts" setup>
 import { onMounted, ref, reactive, nextTick, watch, computed } from "vue";
 import { useUserStore } from '../../store/user';
-import Chart from '../uiParts/Chart.vue';
+import Chart from './../uiParts/Chart.vue';
 
 const userStore = useUserStore();
-const chartDom1 = ref(null);
-const chartDom2 = ref(null);
-const chartDom3 = ref(null);
+const chartDom1 = ref<InstanceType<typeof Chart> | null>(null);
+const chartDom2 = ref<InstanceType<typeof Chart> | null>(null);
+const chartDom3 = ref<InstanceType<typeof Chart> | null>(null);
 
 // 初期表示設定
 const currentDatasetIndex = ref(0);
@@ -41,15 +41,15 @@ const setupChart = () => {
     const monthChartData = chartData.value;
     const twoWeekChartData = [chartData.value.slice(0, 15), chartData.value.slice(15, 31)]
 
-    chartDom1.value.drawChart(userStore.monthChartDays, monthChartData)
-    chartDom2.value.drawChart(userStore.twoWeekChartDays[0], twoWeekChartData[0])
-    chartDom3.value.drawChart(userStore.twoWeekChartDays[1], twoWeekChartData[1])
+    chartDom1.value?.drawChart(userStore.monthChartDays, monthChartData)
+    chartDom2.value?.drawChart(userStore.twoWeekChartDays[0], twoWeekChartData[0])
+    chartDom3.value?.drawChart(userStore.twoWeekChartDays[1], twoWeekChartData[1])
     averageNumber.value.month = calculateAverageSteps(monthChartData)
     averageNumber.value.twoWeek[0] = calculateAverageSteps(twoWeekChartData[0])
     averageNumber.value.twoWeek[1] = calculateAverageSteps(twoWeekChartData[1])
 }
 
-const calculateAverageSteps = (data) => {
+const calculateAverageSteps = (data: number[]) => {
     const max = Math.max(...data);
     const min = Math.min(...data);
     return { max: Math.floor(max), min: Math.floor(min) };
@@ -57,10 +57,10 @@ const calculateAverageSteps = (data) => {
 
 
 
-const changeIndex = (index) => {
+const changeIndex = (index: string) => {
     currentDatasetIndex.value = index === '0' ? 0 : 1;
 }
-const changeRange = (range) => {
+const changeRange = (range: string) => {
     isMonthRange.value = range === "month";
 }
 
@@ -83,7 +83,7 @@ const currentAverage = computed(() => {
 
 const isLoading = ref(false);
 
-const onYearMonthChange = (newValue, oldValue) => {
+const onYearMonthChange = () => {
     isLoading.value = true;
     nextTick(() => {
         isLoading.value = false;

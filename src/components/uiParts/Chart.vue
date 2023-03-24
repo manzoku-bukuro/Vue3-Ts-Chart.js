@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { onMounted, ref, reactive } from "vue";
 import { Chart, BarController, CategoryScale, LinearScale } from "chart.js/auto";
 Chart.register(BarController, CategoryScale, LinearScale);

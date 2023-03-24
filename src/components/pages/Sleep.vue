@@ -1,18 +1,17 @@
-<script setup>
+<script lang="ts" setup>
 import { onMounted, ref, reactive, nextTick, watch, computed } from "vue";
 import { useUserStore } from '../../store/user';
 import Chart from '../uiParts/Chart.vue';
 
 const userStore = useUserStore();
-const chartDom1 = ref(null);
-const chartDom2 = ref(null);
-const chartDom3 = ref(null);
+const chartDom1 = ref<InstanceType<typeof Chart> | null>(null);
+const chartDom2 = ref<InstanceType<typeof Chart> | null>(null);
+const chartDom3 = ref<InstanceType<typeof Chart> | null>(null);
 
 // 初期表示設定
 const currentDatasetIndex = ref(0);
 const isMonthRange = ref(true);
 const currentYearMonth = ref("2022-08");
-const average = ref(0);
 
 // 表示するデータ
 const chartData = ref([]);
@@ -42,15 +41,15 @@ const setupChart = () => {
     const monthChartData = chartData.value;
     const twoWeekChartData = [chartData.value.slice(0, 15), chartData.value.slice(15, 31)]
 
-    chartDom1.value.drawChart(userStore.monthChartDays, monthChartData)
-    chartDom2.value.drawChart(userStore.twoWeekChartDays[0], twoWeekChartData[0])
-    chartDom3.value.drawChart(userStore.twoWeekChartDays[1], twoWeekChartData[1])
+    chartDom1.value?.drawChart(userStore.monthChartDays, monthChartData)
+    chartDom2.value?.drawChart(userStore.twoWeekChartDays[0], twoWeekChartData[0])
+    chartDom3.value?.drawChart(userStore.twoWeekChartDays[1], twoWeekChartData[1])
     averageNumber.value.month = calculateAverageSleep(monthChartData)
     averageNumber.value.twoWeek[0] = calculateAverageSleep(twoWeekChartData[0])
     averageNumber.value.twoWeek[1] = calculateAverageSleep(twoWeekChartData[1])
 }
 
-const calculateAverageSleep = (data) => {
+const calculateAverageSleep = (data: number[]) => {
     const average = data.reduce((before, after) => before + after, 0) / data.length;
     // 平均睡眠時間を時間と分に変換
     const hours = Math.floor(average);
@@ -59,10 +58,10 @@ const calculateAverageSleep = (data) => {
     return { hours, minutes }
 }
 
-const changeIndex = (index) => {
+const changeIndex = (index: string) => {
     currentDatasetIndex.value = index === '0' ? 0 : 1;
 }
-const changeRange = (range) => {
+const changeRange = (range: string) => {
     isMonthRange.value = range === "month";
 }
 
