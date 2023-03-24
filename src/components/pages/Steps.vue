@@ -112,7 +112,6 @@ watch(currentYearMonth, onYearMonthChange);
                         <span class="forward-arrow"></span>
                     </button>
                 </template>
-
             </div>
         </div>
         <div class="content-container">
