@@ -57,27 +57,19 @@ const calculateAverageData = (dayGroupList: DayGroupList) => {
 
     // 歩数を取得
     const stepsArray = dayData.filter(data => data.steps > 0).map(data => data.steps);
-    const stepsSum = stepsArray.reduce((sum: number, steps: number) => sum + steps, 0);
-    const averageSteps = stepsSum / dayData.length;
+    const averageSteps = stepsArray.reduce((sum: number, steps: number) => sum + steps, 0) / dayData.length;
 
     // 睡眠時間を取得
     const sleepArray = dayData.filter(data => data.sleep > 0).map(data => data.sleep);
-    const sleepSum = sleepArray.reduce((sum: number, sleep: number) => sum + sleep, 0);
-    const averageSleep = sleepSum / dayData.length;
+    const averageSleep = sleepArray.reduce((sum: number, sleep: number) => sum + sleep, 0) / dayData.length;;
 
     // 心拍数平均、最大値、最小値を取得
     const heartRateArray = dayData.map(data => data.heartRate).filter(hr => hr > 0);
     const averageHeartRate = heartRateArray.reduce((sum: number, hr: number) => sum + hr, 0) / heartRateArray.length;
-    const maxHeartRate = Math.max(...heartRateArray);
-    const minHeartRate = Math.min(...heartRateArray);
 
 
     userStore.dayAverageList[date] = {
-      heartRate: {
-        average: averageHeartRate,
-        max: maxHeartRate,
-        min: minHeartRate,
-      },
+      heartRate: averageHeartRate,
       steps: averageSteps,
       sleep: averageSleep
     };

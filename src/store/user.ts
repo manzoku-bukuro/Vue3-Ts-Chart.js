@@ -29,11 +29,7 @@ export interface MonthGroupList {
 export interface ChartData {
     steps: number;
     sleep: number;
-    heartRate: {
-        average: number;
-        max: number;
-        min: number;
-    };
+    heartRate: number;
 }
 export interface UserState {
     userData: UserVitalData[];
