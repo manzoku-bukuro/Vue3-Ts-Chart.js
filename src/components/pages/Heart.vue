@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, reactive, nextTick } from "vue";
+import { onMounted, ref, reactive, nextTick, watch, computed } from "vue";
 import { useUserStore } from '../../store/user';
 import Chart from '../uiParts/Chart.vue';
 
@@ -14,21 +14,87 @@ const isMonthRange = ref(true);
 const currentYearMonth = ref("2022-08");
 
 // 表示するデータ
-const stepsData = ref([]);
+const chartData = ref([]);
+const averageNumber = ref({
+    month: {
+        max: 0,
+        min: 0,
+    },
+    twoWeek: [
+        {
+            max: 0,
+            min: 0,
+        },
+        {
+            max: 0,
+            min: 0,
+        }
+    ],
+})
 
 onMounted(() => {
-    stepsData.value = userStore.getYearMonthChartData(currentYearMonth.value, "steps");
-    chartDom1.value.drawChart(userStore.monthChartDays, stepsData.value)
-    chartDom2.value.drawChart(userStore.twoWeekChartDays[0], stepsData.value.slice(0, 15))
-    chartDom3.value.drawChart(userStore.twoWeekChartDays[1], stepsData.value.slice(15, 31))
+    setupChart();
 });
 
+const setupChart = () => {
+    chartData.value = userStore.getYearMonthChartData(currentYearMonth.value, "heartRate");
+    const monthChartData = chartData.value;
+    const twoWeekChartData = [chartData.value.slice(0, 15), chartData.value.slice(15, 31)]
+
+    chartDom1.value.drawChart(userStore.monthChartDays, monthChartData)
+    chartDom2.value.drawChart(userStore.twoWeekChartDays[0], twoWeekChartData[0])
+    chartDom3.value.drawChart(userStore.twoWeekChartDays[1], twoWeekChartData[1])
+    averageNumber.value.month = calculateAverageSteps(monthChartData)
+    averageNumber.value.twoWeek[0] = calculateAverageSteps(twoWeekChartData[0])
+    averageNumber.value.twoWeek[1] = calculateAverageSteps(twoWeekChartData[1])
+}
+
+const calculateAverageSteps = (data) => {
+    const max = Math.max(...data);
+    const min = Math.min(...data);
+    return { max: Math.floor(max), min: Math.floor(min) };
+}
+
+
+
 const changeIndex = (index) => {
-    currentDatasetIndex.value = index === '0' ? 1 : 0;
+    currentDatasetIndex.value = index === '0' ? 0 : 1;
 }
 const changeRange = (range) => {
     isMonthRange.value = range === "month";
 }
+
+const currentTerm = computed(() => {
+    if (isMonthRange.value) {
+        return `${currentYearMonth.value}-01〜${currentYearMonth.value}-31`
+    } else {
+        return currentDatasetIndex.value === 0 ? `${currentYearMonth.value}-01〜${currentYearMonth.value}-15` : `${currentYearMonth.value}-16〜${currentYearMonth.value}-31`
+    }
+})
+
+const currentAverage = computed(() => {
+    if (isMonthRange.value) {
+        return averageNumber.value.month;
+    } else {
+        return currentDatasetIndex.value === 0 ? averageNumber.value.twoWeek[0] : averageNumber.value.twoWeek[1]
+    }
+
+})
+
+const isLoading = ref(false);
+
+const onYearMonthChange = (newValue, oldValue) => {
+    isLoading.value = true;
+    nextTick(() => {
+        isLoading.value = false;
+        setTimeout(() => {
+            setupChart();
+        }, 200);
+
+    })
+};
+
+watch(currentYearMonth, onYearMonthChange);
 </script>
 
 <template>
@@ -45,20 +111,28 @@ const changeRange = (range) => {
             <select class="select-box" v-model="currentYearMonth">
                 <option v-for="ym in userStore.availableYearMonths" :key="ym" :value="ym">{{ ym }}</option>
             </select>
-            <div class="index-button-area" v-if="!isMonthRange">
-                <button class="back-button" @click="() => changeIndex('0')">
-                    <span class="back-arrow"></span>
-                </button>
-                <button class="forward-button" @click="() => changeIndex('1')">
-                    <span class="forward-arrow"></span>
-                </button>
+            <div class="information-area">
+                <div class="average"><span>範囲</span> {{ currentAverage.min }} / {{ currentAverage.max }}<span>脈 / 分</span></div>
+                <div class="term">{{ currentTerm }}</div>
+            </div>
+            <div class="index-button-area">
+                <template v-if="!isMonthRange">
+                    <button class="back-button" @click="() => changeIndex('0')">
+                        <span class="back-arrow"></span>
+                    </button>
+                    <button class="forward-button" @click="() => changeIndex('1')">
+                        <span class="forward-arrow"></span>
+                    </button>
+                </template>
             </div>
         </div>
         <div class="content-container">
-            <div class="category-container">
+            <div class="category-container" v-if="!isLoading">
                 <Chart ref="chartDom1" barKey="1" type="line" v-show="isMonthRange === true" />
-                <Chart ref="chartDom2" barKey="2" type="line" v-show="currentDatasetIndex === 0 && isMonthRange === false" />
-                <Chart ref="chartDom3" barKey="3" type="line" v-show="currentDatasetIndex === 1 && isMonthRange === false" />
+                <Chart ref="chartDom2" barKey="2" type="line"
+                    v-show="currentDatasetIndex === 0 && isMonthRange === false" />
+                <Chart ref="chartDom3" barKey="3" type="line"
+                    v-show="currentDatasetIndex === 1 && isMonthRange === false" />
             </div>
         </div>
     </div>
@@ -175,5 +249,25 @@ const changeRange = (range) => {
     height: 40px;
     display: flex;
     justify-content: space-between;
+}
+
+.index-button-area {
+    width: 90px;
+}
+
+.information-area {
+    display: flex;
+    align-items: center;
+}
+
+.information-area .average {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 12px;
+}
+.information-area .average span {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0 4px;
 }
 </style>
