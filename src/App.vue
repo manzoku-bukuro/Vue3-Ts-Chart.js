@@ -6,7 +6,7 @@ import SideMenu from './components/uiParts/SideMenu.vue';
 const userStore = useUserStore();
 
 const getUserData = async () => {
-  const response = await fetch('http://localhost:5222/user');
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`);
   const data: UserVitalData[] = await response.json();
 
   const dayGroupList = convertToDayGroupList(data);
