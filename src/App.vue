@@ -90,9 +90,7 @@ onMounted(async () => {
 </template>
 
 
-<style>
-@import "./assets/chart.css";
-@import "./assets/reset.css";
+<style lang="scss">
 .chart-container {
   display: grid;
   grid-template-columns: 200px 1fr;
