@@ -1,12 +1,12 @@
 <script setup>
 import { onMounted, ref, reactive, nextTick } from "vue";
 import { useUserStore } from '../../store/user';
-import BarGraph from '../uiParts/BarGraph.vue';
+import Chart from '../uiParts/Chart.vue';
 
 const userStore = useUserStore();
-const barGraph1 = ref(null);
-const barGraph2 = ref(null);
-const barGraph3 = ref(null);
+const chartDom1 = ref(null);
+const chartDom2 = ref(null);
+const chartDom3 = ref(null);
 
 // 初期表示設定
 const currentDatasetIndex = ref(0);
@@ -18,9 +18,9 @@ const stepsData = ref([]);
 
 onMounted(() => {
     stepsData.value = userStore.getYearMonthChartData(currentYearMonth.value, "steps");
-    barGraph1.value.drawChart(userStore.monthChartDays, stepsData.value)
-    barGraph2.value.drawChart(userStore.twoWeekChartDays[0], stepsData.value.slice(0, 15))
-    barGraph3.value.drawChart(userStore.twoWeekChartDays[1], stepsData.value.slice(15, 31))
+    chartDom1.value.drawChart(userStore.monthChartDays, stepsData.value)
+    chartDom2.value.drawChart(userStore.twoWeekChartDays[0], stepsData.value.slice(0, 15))
+    chartDom3.value.drawChart(userStore.twoWeekChartDays[1], stepsData.value.slice(15, 31))
 });
 
 const changeIndex = (index) => {
@@ -56,9 +56,9 @@ const changeRange = (range) => {
         </div>
         <div class="content-container">
             <div class="category-container">
-                <BarGraph ref="barGraph1" barKey="1" v-show="isMonthRange === true" />
-                <BarGraph ref="barGraph2" barKey="2" v-show="currentDatasetIndex === 0 && isMonthRange === false" />
-                <BarGraph ref="barGraph3" barKey="3" v-show="currentDatasetIndex === 1 && isMonthRange === false" />
+                <Chart ref="chartDom1" barKey="1" type="line" v-show="isMonthRange === true" />
+                <Chart ref="chartDom2" barKey="2" type="line" v-show="currentDatasetIndex === 0 && isMonthRange === false" />
+                <Chart ref="chartDom3" barKey="3" type="line" v-show="currentDatasetIndex === 1 && isMonthRange === false" />
             </div>
         </div>
     </div>

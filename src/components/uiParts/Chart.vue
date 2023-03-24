@@ -5,11 +5,12 @@ Chart.register(BarController, CategoryScale, LinearScale);
 
 const props = defineProps({
     barKey: String,
+    type: String,
 });
 const chart = ref(null);
 const drawChart = (labels, data) => {
     chart.value = new Chart(document.getElementById(`bar-chart-${props.barKey}`), {
-        type: "bar",
+        type: props.type,
         data: {
             labels: labels,
             datasets: [
