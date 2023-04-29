@@ -2,12 +2,23 @@
 import { ref, onMounted } from 'vue';
 import { useUserStore, type UserVitalData, type DayGroupList, type MonthGroupList, type ChartData } from './store/user';
 import SideMenu from './components/uiParts/SideMenu.vue';
+import vitalData from '@/assets/data/vital.json';
 
 const userStore = useUserStore();
 
 const getUserData = async () => {
-  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`);
-  const data: UserVitalData[] = await response.json();
+  let data: UserVitalData[] = [];
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/user`);
+    if (response.status !== 200) {
+      throw new Error('データの取得に失敗しました');
+    }
+    data = await response.json();
+    data = vitalData.user;
+  } catch (error) {
+    console.log('テストa')
+    data = vitalData.user;
+  }
 
   const dayGroupList = convertToDayGroupList(data);
 

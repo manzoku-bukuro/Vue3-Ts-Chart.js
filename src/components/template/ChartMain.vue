@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, nextTick, watch, computed } from "vue";
-import { useUserStore } from '../../store/user';
-import Chart from '../uiParts/Chart.vue';
+import { useUserStore } from '@/store/user';
+import Chart from '@/components/uiParts/Chart.vue';
 
 const userStore = useUserStore();
 const chartDom1 = ref<InstanceType<typeof Chart> | null>(null);

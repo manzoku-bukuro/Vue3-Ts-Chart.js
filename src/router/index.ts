@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Steps from '@/components/pages/Steps.vue';
-import Heart from '@/components/pages/Heart.vue';
-import Sleep from '@/components/pages/Sleep.vue';
+import Steps from '@/pages/Steps.vue';
+import Heart from '@/pages/Heart.vue';
+import Sleep from '@/pages/Sleep.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
