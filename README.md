@@ -1,40 +1,21 @@
-# php-test
+# Vue3-TypeScript-ChartJS プロジェクト
 
-This template should help get you started developing with Vue 3 in Vite.
+このプロジェクトは、Vite, Vue3, TypeScriptを使用して開発されたもので、Chart.jsを使ってグラフ表示を練習することを目的としています。医療データを利用し、棒グラフと点グラフを表示する機能があります。
 
-## Recommended IDE Setup
+## 特徴
+- Vite, Vue3, TypeScriptを使用したプロジェクト
+- Chart.jsを使ってグラフ表示を練習
+- JSON形式の医療データを使用
+- 棒グラフと点グラフの表示
+- vue-routerを使ってグラフの種類を切り替え
+- データの表示期間を2週間毎、もしくは1ヶ月毎に変更可能
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## インストール方法
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
+# 依存関係のインストール
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# 開発サーバーを起動
 npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
 ```
