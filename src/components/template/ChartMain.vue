@@ -23,7 +23,7 @@ const isMonthRange = ref(true);
 const currentYearMonth = ref("2022-08");
 
 // 表示するデータ
-const chartData = ref([]);
+const chartData = ref<number[]>([]);
 const averageNumber = ref({
     month: {},
     twoWeek: [{}, {}],

@@ -40,8 +40,12 @@ export interface UserState {
     };
 }
 
-export interface UserGetters extends _GettersTree<UserState> { }
-export interface UserActions { }
+export interface UserGetters extends _GettersTree<UserState> {
+    availableYearMonths: (state: UserState) => string[]
+}
+export interface UserActions {
+    getYearMonthChartData: (yearMonth: string, type: string) => number[];
+}
 export const useUserStore = defineStore<string, UserState, UserGetters, UserActions>({
     id: 'user',
     state: () => ({
@@ -62,7 +66,7 @@ export const useUserStore = defineStore<string, UserState, UserGetters, UserActi
         }
     },
     actions: {
-        getYearMonthChartData(yearMonth: string, type: "steps" | "sleep" | "heartRate") {
+        getYearMonthChartData(yearMonth, type) {
             const stepsData = [];
 
             for (const day of this.monthChartDays) {
@@ -74,25 +78,5 @@ export const useUserStore = defineStore<string, UserState, UserGetters, UserActi
             }
             return stepsData;
         },
-        getMonthSleepAverage(yearMonth: string) {
-            const data = this.monthGroupList[yearMonth];
-            const sleepData = Object.keys(data).map((key) => data[key].sleep);
-            const averageSleep = sleepData.reduce((before, after) => before + after, 0) / sleepData.length
-
-            // 平均睡眠時間を時間と分に変換
-            const hours = Math.floor(averageSleep);
-            const minutes = Math.round((averageSleep - hours) * 60);
-
-            return { hours, minutes }
-        },
-        getMonthStepsAverage(yearMonth: string) {
-            const data = this.monthGroupList[yearMonth];
-            const stepsData = Object.keys(data).map((key) => data[key].steps);
-            const averageSteps = stepsData.reduce((before, after) => before + after, 0) / stepsData.length;
-            return Math.floor(averageSteps);
-        },
-        getMonthHeartRateAverage(yearMonth: string) {
-
-        }
     },
 })
